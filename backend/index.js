@@ -7,6 +7,7 @@ import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 
 import { expressMiddleware } from '@apollo/server/express4';
+import { connectDB } from './db/connectDB.js';
 import mergedResolvers from './resolvers/index.js';
 import mergedTypeDefs from './typeDefs/index.js';
 
@@ -34,5 +35,6 @@ app.use(
 )
 
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve))
+await connectDB()
 
 console.log(`🚀 Sevrer running at http://localhost.4000/`);
