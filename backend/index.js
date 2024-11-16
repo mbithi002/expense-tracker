@@ -1,4 +1,5 @@
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import http from 'http';
 
@@ -8,6 +9,8 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { expressMiddleware } from '@apollo/server/express4';
 import mergedResolvers from './resolvers/index.js';
 import mergedTypeDefs from './typeDefs/index.js';
+
+dotenv.config()
 
 const app = express()
 const httpServer = http.createServer(app)
