@@ -37,3 +37,4 @@ const transactionTypeDef = `#graphql
 `
 
 export { transactionTypeDef }
+// TODO ADD CATEGORY STATISTICS QUERY
