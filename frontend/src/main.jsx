@@ -8,7 +8,7 @@ import './index.css'
 
 const client = new ApolloClient({
   // TODO UPDATE URL ON PRODUCTION
-  uri: 'http://localhost:4000/graphql',
+  uri: String(import.meta.env.VITE_NODE_ENV) === "development" ? 'http://localhost:4000/graphql' : '/graphql',
   cache: new InMemoryCache(),
   credentials: "include"
 })

@@ -15,6 +15,7 @@ import { connectDB } from './db/connectDB.js';
 
 import { buildContext } from 'graphql-passport';
 
+import path from 'path';
 import { configurePassport } from './passport/passport.config.js';
 import mergedResolvers from './resolvers/index.js';
 import mergedTypeDefs from './typeDefs/index.js';
@@ -22,6 +23,7 @@ import mergedTypeDefs from './typeDefs/index.js';
 dotenv.config();
 configurePassport()
 
+const __dirname = path.resolve()
 const app = express()
 const httpServer = http.createServer(app)
 
@@ -31,7 +33,7 @@ const store = new MongoDBStore({
     collection: 'sessions'
 })
 
-store.on("error", (error) => console.log("store error>",error))
+store.on("error", (error) => console.log("store error>", error))
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -67,6 +69,11 @@ app.use(
         context: async ({ req, res }) => buildContext({ req, res })
     })
 )
+
+app.use(express.static(path.join(__dirname, "frontend/dist")))
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend/dist", "index.html"))
+})
 
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve))
 await connectDB()
