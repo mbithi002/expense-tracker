@@ -31,23 +31,19 @@ const store = new MongoDBStore({
     collection: 'sessions'
 })
 
-store.on("error", (error) => console.log(error))
-
+store.on("error", (error) => console.log("store error>",error))
 app.use(
-    session(
-        {
-            secret: process.env.SESSION_SECRET,
-            resave: false,
-            saveUninitialized: false,
-            cookie: {
-                maxAge: 1000 * 60 * 60 * 24 * 7,
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-            },
-            store: store
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+            httpOnly: true,
         },
-    )
-)
+        store: store,
+    })
+);
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -61,9 +57,9 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-    '/',
+    '/graphql',
     cors({
-        origin: process.env.FRONTEND_URL,
+        origin: 'http://localhost:3000',
         credentials: true,
     }),
     express.json(),
@@ -75,4 +71,5 @@ app.use(
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve))
 await connectDB()
 
-console.log(`🚀 Sevrer running at http://localhost.4000/`);
+
+console.log(`🚀 Server running at http://localhost:4000/graphql`);

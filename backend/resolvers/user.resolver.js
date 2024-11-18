@@ -9,7 +9,7 @@ const userResolver = {
                 if (!username || !name || !password || !gender) {
                     return { error: 'Please fill in all fields' }
                 }
-                const existingUser = await User.finOne({ username })
+                const existingUser = await User.findOne({ username })
                 if (existingUser) {
                     return { error: 'Username already exists' }
                 }
@@ -44,7 +44,7 @@ const userResolver = {
                 if (!userExsists) {
                     return { error: 'Username does not exist' }
                 }
-                const isMatch = await bcrypt.compare(password, user.password)
+                const isMatch = await bcrypt.compare(password, userExsists.password)
                 if (!isMatch) {
                     return { error: 'Password is incorrect' }
                 }
@@ -58,27 +58,20 @@ const userResolver = {
             }
         },
         logout: async (_, __, context) => {
+            const { req, res } = context
             try {
-                const { req, res } = context;
                 await context.logout();
-
-                return new Promise((resolve, reject) => {
-                    req.session.destroy((err) => {
-                        if (err) {
-                            console.log("Error destroying session: ", err);
-                            reject(new Error("Error logging out"));
-                        } else {
-                            res.clearCookie("connect.sid");
-                            resolve({ success: "Logout successful" });
-                        }
-                    });
+                req.session.destroy((err) => {
+                    if (err) throw err;
                 });
-            } catch (error) {
-                console.log("Error in logout: ", error);
-                throw new Error(error.message || "Something went wrong");
-            }
-        }
+                res.clearCookie("connect.sid");
 
+                return { message: "Logged out successfully" };
+            } catch (err) {
+                console.error("Error in logout:", err);
+                throw new Error(err.message || "Internal server error");
+            }
+        },
     },
     Query: {
         authUser: async (_, __, context) => {
