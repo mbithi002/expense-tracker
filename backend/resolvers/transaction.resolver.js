@@ -15,7 +15,7 @@ const transactionResolver = {
                 throw new Error(error.message) || 'something went wrong'
             }
         },
-        transaction: async (_, { transactionId }) => {
+        transaction: async (_, { transactionId }, context) => {
             try {
                 if (!context.getUser()) throw new Error("unauthorized")
                 const transaction = await Transaction.findById(transactionId)
@@ -32,13 +32,13 @@ const transactionResolver = {
             try {
                 const newTransaction = new Transaction({
                     ...input,
-                    userId: context.getUser().id
-                })
-                await newTransaction.save()
-                return newTransaction
-            } catch (error) {
-                console.log("Error in create transaction", error);
-                throw new Error("Error creating transaction")
+                    userId: context.getUser()._id,
+                });
+                await newTransaction.save();
+                return newTransaction;
+            } catch (err) {
+                console.error("Error creating transaction:", err);
+                throw new Error("Error creating transaction");
             }
         },
         updateTransaction: async (_, { input }) => {

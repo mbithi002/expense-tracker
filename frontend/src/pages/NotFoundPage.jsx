@@ -1,4 +1,4 @@
-const NotFound = () => {
+const NotFoundPage = () => {
     return (
         <section>
             <div className=' text-white'>
@@ -22,4 +22,4 @@ const NotFound = () => {
         </section>
     );
 };
-export default NotFound;
+export default NotFoundPage;
