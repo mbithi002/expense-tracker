@@ -1,4 +1,5 @@
 import Transaction from '../models/transactions.model.js';
+import User from '../models/user.model.js';
 
 const transactionResolver = {
     Query: {
@@ -77,6 +78,17 @@ const transactionResolver = {
             }
         },
     },
-    // TODO ADD TRANSACTION / USER RELATIONSHIP
+    Transaction: {
+        user: async (parent, _, __) => {
+            const userId = parent.userId
+            try {
+                const user = await User.findById(userId)
+                return user
+            } catch (error) {
+                console.log("Error in transaction resolver ", error);
+                throw new Error(error.message)
+            }
+        }
+    }
 }
 export default transactionResolver

@@ -1,13 +1,22 @@
 import { useQuery } from "@apollo/client";
 import { GET_TRANSACTIONS } from "../graphql/queries/transaction.query";
+import { GET_AUTHENTICATED_USER, GET_USER_AND_TRANSACTIONS } from "../graphql/queries/user.query";
 import Card from "./Card";
 
 const Cards = () => {
     const { data, loading, error } = useQuery(GET_TRANSACTIONS)
-    if (error) return <p className="text-center text-red-500">{error.message}</p>
-    if (loading) return <p className="text-center">Loading...</p>
+    const { data: authUserData, loadingAuthUser } = useQuery(GET_AUTHENTICATED_USER)
+    const { data: userAndTransactions } = useQuery(GET_USER_AND_TRANSACTIONS, {
+        variables: {
+            userId: authUserData?.authUser._id
+        }
+    })
 
-    // TODO => ADD RELATIONSHIPS
+    if (loading || loadingAuthUser) return <p className="text-center">Loading...</p>
+    if (error) return <p className="text-center text-red-500">{error.message}</p>
+    if (!loading && data?.transactions.length === 0) return (
+        <p className='text-center text-gray-500'>No transactions Yet</p>
+    )
     return (
         <div className='w-full px-10 min-h-[40vh]'>
             <p className='text-5xl font-bold text-center my-10'>History</p>
@@ -17,11 +26,7 @@ const Cards = () => {
                         <Card key={i} transaction={transaction} />
                     ))
                 }
-                {
-                    !loading && data?.transactions.length === 0 && (
-                        <p className='text-center text-gray-500'>No transactions Yet</p>
-                    )
-                }
+
             </div>
         </div>
     );
