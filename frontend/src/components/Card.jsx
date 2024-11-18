@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { toast } from 'react-hot-toast';
 import { BsCardText } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
@@ -7,6 +7,7 @@ import { HiPencilAlt } from "react-icons/hi";
 import { MdOutlinePayments } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { DELETE_TRANSACTION } from '../graphql/mutations/transaction.mutation';
+import { GET_AUTHENTICATED_USER } from '../graphql/queries/user.query';
 import { formatDate } from "../utils/formatDate";
 
 const categoryColorMap = {
@@ -16,13 +17,12 @@ const categoryColorMap = {
 };
 
 const Card = ({ transaction }) => {
+	const { data: authUserData } = useQuery(GET_AUTHENTICATED_USER);
 	let { category, amount, location, date, paymentType, description, } = transaction
 	const cardClass = categoryColorMap[category];
 	description = description[0]?.toUpperCase() + description.slice(1)
-	const formattedDate = formatDate(date)
-
 	const [deleteTransaction, { loading, error }] = useMutation(DELETE_TRANSACTION, {
-		refetchQueries: ['getTransactions']
+		refetchQueries: ['getTransactions', 'GetcategoryStatistics']
 	})
 
 	const handleDelete = async () => {
@@ -78,7 +78,7 @@ const Card = ({ transaction }) => {
 						}
 					</p>
 					<img
-						src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
+						src={authUserData?.authUser.profilePicture}
 						className='h-8 w-8 border rounded-full'
 						alt=''
 					/>

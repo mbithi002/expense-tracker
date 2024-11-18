@@ -6,7 +6,6 @@ const Cards = () => {
     const { data, loading, error } = useQuery(GET_TRANSACTIONS)
     if (error) return <p className="text-center text-red-500">{error.message}</p>
     if (loading) return <p className="text-center">Loading...</p>
-    console.log("cards", data);
 
     // TODO => ADD RELATIONSHIPS
     return (
